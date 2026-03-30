@@ -1,10 +1,11 @@
 # Self-Supervised Robot Planning (TAMP)
 
-This project implements a Task and Motion Planning (TAMP) framework for a robotic manipulator (Franka Emika Panda) using a self-supervised perception system. The system learns to identify and cluster objects in a Gazebo simulation environment without manual labeling, then uses a PDDL-based planner to execute pick-and-place tasks.
+This project implements a Task and Motion Planning (TAMP) framework for a robotic manipulator (Franka Emika Panda) using a self-supervised perception system. The system learns to identify and cluster objects in a Gazebo simulation environment without manual labeling.
 
 ## Demonstration
 
-![Project Demo](media/demo.mp4)
+Visit the link below to view the demonstration video:
+[Project Demo Video](media/demo.mp4)
 
 ## Project Overview
 
@@ -15,9 +16,8 @@ The system operates in three main phases:
 
 ## File Structure
 
-*   `src/pytamp_moveit_bridge/`: Core logic for perception, planning, and execution.
-*   `src/panda_moveit_config/`: Robot configuration and Gazebo world definitions.
-*   `models/`: Saved neural network weights and clustering models.
+*   `src/`: Contains the ROS 2 packages for perception, planning, and execution.
+*   `models/`: Stores the trained neural networks and clustering models.
 *   `dataset/`: Images used for training the perception system.
 *   `media/`: Project demonstration videos and screenshots.
 
@@ -30,7 +30,6 @@ cd self-supervised-robot-planning
 ```
 
 ### 2. Install Dependencies
-Ensure you have ROS 2 (Humble or later) and the following Python packages installed:
 ```bash
 pip install torch torchvision numpy opencv-python scikit-learn joblib pyperplan
 ```
@@ -41,51 +40,50 @@ colcon build
 source install/setup.bash
 ```
 
-## Step-by-Step Execution
+## Running the System (Four Terminal Setup)
 
-### Step 1: Data Collection
-Launch the simulation and run the data collector to generate a randomized dataset.
+To run the full TAMP system with the Franka Panda robot, follow these steps across four separate terminals.
+
+### Terminal 1: Simulation and MoveIt
+Launch the Gazebo simulator and the MoveIt motion planning environment.
 ```bash
-# In terminal 1: Launch Gazebo
+source install/setup.bash
 ros2 launch panda_moveit_config moveit_gazebo_obb.py
-
-# In terminal 2: Run data collector
-python3 src/pytamp_moveit_bridge/scripts/collect_data.py
-```
-This saves 1,000 randomized images to the `dataset/images/` directory.
-
-### Step 2: Training the Perception Model
-Train the SimCLR backbone on the collected images.
-```bash
-python3 src/pytamp_moveit_bridge/scripts/train_simclr.py --epochs 100
-```
-This produces `models/simclr_backbone.pt`.
-
-### Step 3: Clustering and Grounding
-Run the feature extraction and K-Means clustering to create symbolic labels.
-```bash
-python3 src/pytamp_moveit_bridge/scripts/cluster_features.py
-```
-To visualize the clusters and verify the grouping:
-```bash
-python3 src/pytamp_moveit_bridge/scripts/visualize_clusters.py
 ```
 
-### Step 4: Running the Planner
-Start the full system and trigger a planning goal (e.g., picking the blue box).
+### Terminal 2: Perception
+Run the perception node that processes camera images and identifies objects using the self-supervised models.
 ```bash
-# In terminal 1: Launch the full system
-ros2 launch pytamp_moveit_bridge integration.launch.py
+source install/setup.bash
+ros2 run pytamp_moveit_bridge ssl_perception_node.py
+```
 
-# In terminal 2: Send a goal to the planner
+### Terminal 3: Planner
+Start the PDDL planner node that generates task plans based on the live world state.
+```bash
+source install/setup.bash
+ros2 run pytamp_moveit_bridge planner_node.py
+```
+
+### Terminal 4: Action Executor and Goal Trigger
+Start the action executor and then publish a goal to start the picking task.
+```bash
+# Start the executor
+source install/setup.bash
+ros2 run pytamp_moveit_bridge action_executor.py
+
+# In the same terminal (or another), trigger the goal:
 ros2 topic pub /planning_goal std_msgs/msg/String "{data: 'blue_box'}"
 ```
 
-## Visualizing Results
+## Training Lifecycle
 
-The clustering process groups similar objects together. Below is an example of the features discovered by the self-supervised system:
+To re-train or update the models, follow these steps:
 
-![Cluster Samples](cluster_0_samples.png)
+1.  **Data Collection:** `python3 src/pytamp_moveit_bridge/scripts/collect_data.py`
+2.  **Training SimCLR:** `python3 src/pytamp_moveit_bridge/scripts/train_simclr.py`
+3.  **Clustering:** `python3 src/pytamp_moveit_bridge/scripts/cluster_features.py`
+4.  **Visualization:** `python3 src/pytamp_moveit_bridge/scripts/visualize_clusters.py`
 
 ## License
 
