@@ -2,6 +2,10 @@ install/
 build/
 log/
 .venv/
+TAMP-1/install/
+TAMP-1/build/
+TAMP-1/log/
+TAMP-1/yolov8_env/
 research_paper*
 generate_springer_paper.py
 build_pdf.py
