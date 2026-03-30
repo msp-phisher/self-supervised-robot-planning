@@ -2,8 +2,6 @@ install/
 build/
 log/
 .venv/
-TAMP-1/dataset/
-TAMP-1/models/simclr_full.pt
 research_paper*
 generate_springer_paper.py
 build_pdf.py

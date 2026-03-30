@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "/home/user/Vishal_project/pickplace/yolo/moveit2_obb/src/panda_moveit_config",
+    "cmake.ignoreCMakeListsMissing": true
+}
