@@ -1,12 +1,32 @@
-install/
+# Build artifacts
 build/
+install/
 log/
+
+# Virtual environments
 .venv/
-TAMP-1/install/
-TAMP-1/build/
-TAMP-1/log/
-TAMP-1/yolov8_env/
-research_paper*
+v-env/
+yolov8_env/
+env/
+venv/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary and editor files
+*.swp
+*~
+.DS_Store
+.vscode/
+
+# Ignore collected dataset images (keep the directory but ignore contents if needed)
+# dataset/images/image_*.png
+
+# Ignore original scripts used for formatting if no longer tracked
 generate_springer_paper.py
 build_pdf.py
 pdf_exporter.py
+research_paper*

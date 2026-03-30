@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(dir \"C:\\\\Users\\\\manas\\\\Desktop\\\\TAMP-main\" /s /b)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
-    ]
-  }
-}
